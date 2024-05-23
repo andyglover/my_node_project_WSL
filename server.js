@@ -10,7 +10,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 // Define the timestamp format variable
-const timestampFormat = "humanReadable"; // Change this to your preferred format: iso, compact, humanReadable, unix, custom
+const timestampFormat = "iso"; // Change this to your preferred format: iso, compact, humanReadable, unix, custom
 
 // Examples of different timestamp formats:
 //
