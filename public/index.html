@@ -1,55 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Submit Markdown</title>
-  </head>
-  <body>
-    <h1>Submit Markdown</h1>
-    <form id="noteForm">
-      <textarea
-        name="content"
-        id="markdownContent"
-        placeholder="Enter your Markdown content here..."
-        rows="10"
-        cols="30"
-      ></textarea>
-      <br />
-      <button type="submit">Submit</button>
-    </form>
-    <div id="successMessage" style="display: none; margin-top: 20px"></div>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Submit Markdown</title>
+    </head>
+    <body>
+        <h1>Submit Markdown</h1>
+        <form id="noteForm">
+            <textarea name="content"
+                      id="markdownContent"
+                      placeholder="Enter your Markdown content here..."
+                      rows="10"
+                      cols="30"></textarea>
+            <br>
+            <button type="submit">Submit</button>
+        </form>
+        <div id="successMessage" style="display:none; margin-top: 20px;"></div>
+        <ul id="fileList">
+        </ul>
+        <script>
+        const fileList = [];
 
-    <script>
-      document
-        .getElementById("noteForm")
-        .addEventListener("submit", function (event) {
-          event.preventDefault(); // Prevent the default form submission
+        document.getElementById('noteForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
 
-          const content = document.getElementById("markdownContent").value;
-          fetch("/submit", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-            },
-            body: `content=${encodeURIComponent(content)}`,
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              const successMessage = document.getElementById("successMessage");
-              if (data.error) {
-                successMessage.innerHTML = `Error: ${data.error}`;
-              } else {
-                successMessage.innerHTML = `File saved successfully: ${data.filename}`;
-              }
-              successMessage.style.display = "block";
+            const content = document.getElementById('markdownContent').value;
+            fetch('/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `content=${encodeURIComponent(content)}`,
             })
-            .catch((error) => {
-              const successMessage = document.getElementById("successMessage");
-              successMessage.innerHTML = `Error: ${error.message}`;
-              successMessage.style.display = "block";
+            .then(response => response.json())
+            .then(data => {
+                const successMessage = document.getElementById('successMessage');
+                if (data.error) {
+                    successMessage.innerHTML = `Error: ${data.error}`;
+                } else {
+                    successMessage.innerHTML = `File saved successfully: ${data.filename}`;
+                    
+                    // Clear the input field
+                    document.getElementById('markdownContent').value = '';
+
+                    // Add the filename to the list and keep only the last 10
+                    fileList.unshift(data.filename);
+                    if (fileList.length > 10) {
+                        fileList.pop();
+                    }
+
+                    // Update the displayed list
+                    const fileListElement = document.getElementById('fileList');
+                    fileListElement.innerHTML = fileList.map(file => `<li>${file}</li>`).join('');
+                }
+                successMessage.style.display = 'block';
+            })
+            .catch(error => {
+                const successMessage = document.getElementById('successMessage');
+                successMessage.innerHTML = `Error: ${error.message}`;
+                successMessage.style.display = 'block';
             });
         });
-    </script>
-  </body>
+        </script>
+    </body>
 </html>
