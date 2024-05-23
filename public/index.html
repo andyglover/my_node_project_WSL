@@ -7,7 +7,7 @@
   </head>
   <body>
     <h1>Submit Markdown</h1>
-    <form id="noteForm" action="/submit" method="post">
+    <form id="noteForm">
       <textarea
         name="content"
         id="markdownContent"
@@ -18,5 +18,38 @@
       <br />
       <button type="submit">Submit</button>
     </form>
+    <div id="successMessage" style="display: none; margin-top: 20px"></div>
+
+    <script>
+      document
+        .getElementById("noteForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault(); // Prevent the default form submission
+
+          const content = document.getElementById("markdownContent").value;
+          fetch("/submit", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: `content=${encodeURIComponent(content)}`,
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              const successMessage = document.getElementById("successMessage");
+              if (data.error) {
+                successMessage.innerHTML = `Error: ${data.error}`;
+              } else {
+                successMessage.innerHTML = `File saved successfully: ${data.filename}`;
+              }
+              successMessage.style.display = "block";
+            })
+            .catch((error) => {
+              const successMessage = document.getElementById("successMessage");
+              successMessage.innerHTML = `Error: ${error.message}`;
+              successMessage.style.display = "block";
+            });
+        });
+    </script>
   </body>
 </html>

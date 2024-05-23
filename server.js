@@ -10,15 +10,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 // Define the timestamp format variable
-const timestampFormat = "iso"; // Change this to your preferred format: iso, compact, humanReadable, unix, custom
-
-// Examples of different timestamp formats:
-//
-// ISO 8601 (iso):                  "2023-05-20T15-20-30-000Z"
-// Compact Date-Time (compact):     "20230520-152030"
-// Human-Readable (humanReadable):  "2023-May-20_15-20-30"
-// Unix Timestamp (unix):           "1684615230"
-// Custom Format (custom):          "2023_05_20-15_20_30"
+const timestampFormat = "humanReadable"; // Change this to your preferred format: iso, compact, humanReadable, unix, custom
 
 function getTimestamp(format) {
   const now = new Date();
@@ -71,9 +63,9 @@ app.post("/submit", (req, res) => {
 
   fs.writeFile(filepath, content, (err) => {
     if (err) {
-      return res.status(500).send("Error saving file");
+      return res.status(500).json({ error: "Error saving file" });
     }
-    res.status(200).send("File saved successfully");
+    res.status(200).json({ filename });
   });
 });
 
